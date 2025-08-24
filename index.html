@@ -1,13 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RSVP Ulang Tahun</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script type="module">
-    // Import dari CDN Firebase v9+
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; background: #f8f9fa; }
+    .container { max-width: 400px; margin: 50px auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    input, button { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; }
+    button { background: #28a745; color: white; border: none; cursor: pointer; }
+    button:hover { background: #218838; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Konfirmasi Kehadiran</h2>
+    <input type="text" id="nama" placeholder="Nama Anda" required />
+    <input type="number" id="jumlah" placeholder="Jumlah Hadir" required />
+    <button onclick="kirimData()">Kirim</button>
+    <p id="status"></p>
+  </div>
 
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
+
+  <script>
     // Konfigurasi Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyCpqtIfPcPE90K8E-NYU4NhfgUewxIYmf0",
@@ -20,48 +38,27 @@
     };
 
     // Inisialisasi Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-    window.addEventListener("DOMContentLoaded", () => {
-      const form = document.getElementById('rsvpForm');
-      const status = document.getElementById('status');
-
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        let nama = document.getElementById('nama').value;
-        let jumlah = document.getElementById('jumlah').value;
-
+    async function kirimData() {
+      const nama = document.getElementById('nama').value;
+      const jumlah = document.getElementById('jumlah').value;
+      if (nama && jumlah) {
         try {
-          await addDoc(collection(db, "rsvp"), {
+          await db.collection("rsvp").add({
             nama: nama,
             jumlah: parseInt(jumlah),
-            timestamp: new Date()
+            waktu: new Date()
           });
-          status.innerText = "Terima kasih, konfirmasi Anda tersimpan!";
-          form.reset();
-        } catch (error) {
-          status.innerText = "Gagal menyimpan data!";
-          console.error(error);
+          document.getElementById('status').innerText = "Data berhasil dikirim!";
+        } catch (e) {
+          document.getElementById('status').innerText = "Gagal mengirim: " + e;
         }
-      });
-    });
+      } else {
+        document.getElementById('status').innerText = "Isi semua data!";
+      }
+    }
   </script>
-  <style>
-    body { font-family: Arial; text-align: center; padding: 20px; }
-    form { max-width: 300px; margin: auto; }
-    input, button { width: 100%; padding: 8px; margin: 5px 0; }
-  </style>
-</head>
-<body>
-
-  <h2>Konfirmasi Kehadiran</h2>
-  <form id="rsvpForm">
-    <input type="text" id="nama" placeholder="Nama Anda" required>
-    <input type="number" id="jumlah" placeholder="Jumlah Hadir" required>
-    <button type="submit">Kirim</button>
-  </form>
-  <p id="status"></p>
-
 </body>
 </html>
