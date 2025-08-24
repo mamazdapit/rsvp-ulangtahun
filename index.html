@@ -1,1 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>RSVP Ulang Tahun</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+  <style>
+    body { font-family: Arial; text-align: center; }
+    form { max-width: 300px; margin: auto; }
+    input, button { width: 100%; padding: 8px; margin: 5px 0; }
+  </style>
+</head>
+<body>
+
+<h2>Konfirmasi Kehadiran</h2>
+<form id="rsvpForm">
+  <input type="text" id="nama" placeholder="Nama Anda" required>
+  <input type="number" id="jumlah" placeholder="Jumlah Hadir" required>
+  <button type="submit">Kirim</button>
+</form>
+<p id="status"></p>
+
+<script>
+  // Konfigurasi Firebase (gunakan punyamu)
+  const firebaseConfig = {
+    apiKey: "AIzaSyCpqtIfPcPE90K8E-NYU4NhfgUewxIYmf0",
+    authDomain: "mamaz-c68a6.firebaseapp.com",
+    projectId: "mamaz-c68a6",
+    storageBucket: "mamaz-c68a6.firebasestorage.app",
+    messagingSenderId: "36074618894",
+    appId: "1:36074618894:web:87208421efa5718a817c5f",
+    measurementId: "G-E4ER7EWE0H"
+  };
+
+  // Inisialisasi Firebase
+  const app = firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  // Event Listener Form
+  document.getElementById('rsvpForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    let nama = document.getElementById('nama').value;
+    let jumlah = document.getElementById('jumlah').value;
+
+    try {
+      await db.collection("rsvp").add({
+        nama: nama,
+        jumlah: parseInt(jumlah),
+        timestamp: new Date()
+      });
+      document.getElementById('status').innerText = "Terima kasih, konfirmasi Anda tersimpan!";
+      e.target.reset();
+    } catch (error) {
+      document.getElementById('status').innerText = "Gagal menyimpan data!";
+      console.error(error);
+    }
+  });
+</script>
+
+</body>
+</html>
 
